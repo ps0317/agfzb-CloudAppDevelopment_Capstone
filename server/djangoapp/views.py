@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, render, redirect
 from .models import CarDealer, CarMake, CarModel
-# from .restapis import get_dealer_by_id, get_dealers_from_cf, get_dealers_by_state, get_dealer_reviews_from_cf, post_request
+from .restapis import get_dealer_by_id, get_dealers_from_cf, get_dealers_by_state, get_dealer_reviews_from_cf, post_request
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 from datetime import datetime
@@ -17,18 +17,18 @@ logger = logging.getLogger(__name__)
 # View to render the index page with a list of dealerships
 def get_dealerships(request):
     if request.method == "GET":
-        #context = {}
+        context = {}
         url = "https://us-south.functions.appdomain.cloud/api/v1/web/PhanNgoc_djangoserver-space/dealership-package/get-dealerships"
         # Get dealers from the Cloudant DB
-        #context["dealerships"] = get_dealers_from_cf(url)
+        context["dealerships"] = get_dealers_from_cf(url)
         
         dealerships = get_dealers_from_cf(url)
         # Concat all dealer's short name
         #dealer_names = ' '.join([dealer.short_name for dealer in context["dealerships"]])
-        dealer_names = ' '.join([dealer.short_name for dealer in dealerships])
-        
-        #return render(request, 'djangoapp/index.html', context)
-        return HttpResponse(dealer_names)
+        # dealer_names = ' '.join([dealer.short_name for dealer in dealerships])
+        context["dealership_list"] = dealerships
+        return render(request, 'djangoapp/index.html', context)
+        # return HttpResponse(dealer_names)
 
 # View to render a static about page
 def about(request):
